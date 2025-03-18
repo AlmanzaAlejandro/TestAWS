@@ -20,17 +20,17 @@ jobs:
       - name: Login to docker hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Build docker image
-        run: docker build -t almanzaalejandro/holamundo .
+        run: docker build -t almanzaalejandro/springboot-example .
       - name: Publish image to docker hub
-        run: docker push almanzaalejandro/holamundo:latest
+        run: docker push almanzaalejandro/springboot-example:latest
 
   deploy:
     needs: build
     runs-on: [aws-ec2]
     steps:
       - name: Pull Image from docker hub
-        run: docker pull almanzaalejandro/holamundo:latest
+        run: docker pull almanzaalejandro/springboot-example:latest
       - name: Delete old container
-        run: docker rm -f holamundo-container
+        run: docker rm -f springboot-example-container
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name holamundo-container almanzaalejandro/holamundo
+        run: docker run -d -p 8080:8080 --name springboot-example-container almanzaalejandro/springboot-example
