@@ -6,21 +6,32 @@ on:
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
+
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
+
       - name: Build Project
         run: mvn clean install -DskipTests
-      - name: Login to docker hub
+
+      - name: Copiar .jar con diferentes nombres
+        run: |
+          mkdir jars
+          cp target/*.jar jars/holamundo-uno.jar
+          cp target/*.jar jars/holamundo-dos.jar
+          cp target/*.jar jars/holamundo-tres.jar
+          cp target/*.jar jars/holamundo-cuatro.jar
+
+      - name: Login to Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
 
-        # Build y push de los diferentes dodckerfiles
+      # Build Docker images con distintos Dockerfiles
       - name: Build Docker image 1
         run: docker build -t almanzaalejandro/springboot-uno -f "Dockerfile" .
 
@@ -33,6 +44,7 @@ jobs:
       - name: Build Docker image 4
         run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-cuatro" .
 
+      # Push imágenes a Docker Hub
       - name: Push Image 1
         run: docker push almanzaalejandro/springboot-uno:latest
 
@@ -47,32 +59,28 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [aws-ec2]
+    runs-on: aws-ec2
     steps:
-      - name: Pull Image from docker hub
-        run: docker pull almanzaalejandro/springboot-example:latest
-      - name: Delete old container
-        run: docker rm -f springboot-example-container
-      - name: Run docker container
-        run: docker run -d -p 8080:8080 --name springboot-example-container almanzaalejandro/springboot-example
-      
-      - name: Pull images
+      - name: Pull images desde Docker Hub
         run: |
           docker pull almanzaalejandro/springboot-uno:latest
           docker pull almanzaalejandro/springboot-dos:latest
           docker pull almanzaalejandro/springboot-tres:latest
           docker pull almanzaalejandro/springboot-cuatro:latest
 
-      - name: Remove old containers
+      - name: Eliminar contenedores anteriores
         run: |
           docker rm -f springboot-uno || true
           docker rm -f springboot-dos || true
           docker rm -f springboot-tres || true
           docker rm -f springboot-cuatro || true
 
-      - name: Run containers
+      - name: Ejecutar contenedores nuevos
         run: |
           docker run -d -p 8081:8080 --name springboot-uno almanzaalejandro/springboot-uno
           docker run -d -p 8082:8080 --name springboot-dos almanzaalejandro/springboot-dos
           docker run -d -p 8083:8080 --name springboot-tres almanzaalejandro/springboot-tres
           docker run -d -p 8084:8080 --name springboot-cuatro almanzaalejandro/springboot-cuatro
+
+      - name: Verificar contenedores activos
+        run: docker ps
