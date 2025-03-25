@@ -19,10 +19,31 @@ jobs:
         run: mvn clean install -DskipTests
       - name: Login to docker hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-      - name: Build docker image
-        run: docker build -t almanzaalejandro/springboot-example .
-      - name: Publish image to docker hub
-        run: docker push almanzaalejandro/springboot-example:latest
+
+        # Build y push de los diferentes dodckerfiles
+      - name: Build Docker image 1
+        run: docker build -t almanzaalejandro/springboot-uno -f "Dockerfile" .
+
+      - name: Build Docker image 2
+        run: docker build -t almanzaalejandro/springboot-dos -f "Dockerfile-dos" .
+
+      - name: Build Docker image 3
+        run: docker build -t almanzaalejandro/springboot-tres -f "Dockerfile-tres" .
+
+      - name: Build Docker image 4
+        run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-cuatro" .
+
+      - name: Push Image 1
+        run: docker push almanzaalejandro/springboot-uno:latest
+
+      - name: Push Image 2
+        run: docker push almanzaalejandro/springboot-dos:latest
+
+      - name: Push Image 3
+        run: docker push almanzaalejandro/springboot-tres:latest
+
+      - name: Push Image 4
+        run: docker push almanzaalejandro/springboot-cuatro:latest
 
   deploy:
     needs: build
@@ -34,3 +55,24 @@ jobs:
         run: docker rm -f springboot-example-container
       - name: Run docker container
         run: docker run -d -p 8080:8080 --name springboot-example-container almanzaalejandro/springboot-example
+      
+      - name: Pull images
+        run: |
+          docker pull almanzaalejandro/springboot-uno:latest
+          docker pull almanzaalejandro/springboot-dos:latest
+          docker pull almanzaalejandro/springboot-tres:latest
+          docker pull almanzaalejandro/springboot-cuatro:latest
+
+      - name: Remove old containers
+        run: |
+          docker rm -f springboot-uno || true
+          docker rm -f springboot-dos || true
+          docker rm -f springboot-tres || true
+          docker rm -f springboot-cuatro || true
+
+      - name: Run containers
+        run: |
+          docker run -d -p 8081:8080 --name springboot-uno almanzaalejandro/springboot-uno
+          docker run -d -p 8082:8080 --name springboot-dos almanzaalejandro/springboot-dos
+          docker run -d -p 8083:8080 --name springboot-tres almanzaalejandro/springboot-tres
+          docker run -d -p 8084:8080 --name springboot-cuatro almanzaalejandro/springboot-cuatro

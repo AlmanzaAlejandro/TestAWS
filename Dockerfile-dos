@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
-COPY target/holamundo-uno.jar holamundo.jar
-EXPOSE 8081
+COPY target/holamundo-dos.jar holamundo.jar
+EXPOSE 8082
 CMD ["java", "-jar", "holamundo.jar"]
