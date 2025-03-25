@@ -1,0 +1,11 @@
+[Unit]
+Description=Servidor Gateway para redirigir a Microservicios
+After=sl3-configuration-server.service sl3-server-eureka.service
+
+[Service]
+User=ec2-user
+ExecStart=java -jar /home/ec2-user/Servidores/ServidorGateway-2.0.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

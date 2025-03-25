@@ -1,0 +1,5 @@
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY jars/seguridad.jar app.jar
+EXPOSE 8085
+CMD ["java", "-jar", "app.jar"]

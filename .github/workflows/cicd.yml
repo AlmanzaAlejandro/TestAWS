@@ -20,42 +20,56 @@ jobs:
       - name: Build Project
         run: mvn clean install -DskipTests
 
-      - name: Copiar .jar con diferentes nombres
+      - name: Copiar .jar desde Servidores_Ejecutables
         run: |
           mkdir jars
-          cp target/*.jar jars/holamundo-uno.jar
-          cp target/*.jar jars/holamundo-dos.jar
-          cp target/*.jar jars/holamundo-tres.jar
-          cp target/*.jar jars/holamundo-cuatro.jar
+          cp Servidores_Ejecutables/ServidorCorreo-1.0.jar jars/correo.jar
+          cp Servidores_Ejecutables/ServidorConfiguracion-2.0.jar jars/configuracion.jar
+          cp Servidores_Ejecutables/ServidorEureka-2.0.jar jars/eureka.jar
+          cp Servidores_Ejecutables/ServidorGateway-2.0.jar jars/gateway.jar
+          cp Servidores_Ejecutables/ServidorSeguridad-2.0.jar jars/seguridad.jar
+          cp Servidores_Ejecutables/ServidorSeguridadCuentas-1.0.0.jar jars/cuentas.jar
 
       - name: Login to Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
 
       # Build Docker images con distintos Dockerfiles
       - name: Build Docker image 1
-        run: docker build -t almanzaalejandro/springboot-uno -f "Dockerfile" .
+        run: docker build -t almanzaalejandro/springboot-uno -f "Dockerfile-correo" .
 
       - name: Build Docker image 2
-        run: docker build -t almanzaalejandro/springboot-dos -f "Dockerfile-dos" .
+        run: docker build -t almanzaalejandro/springboot-dos -f "Dockerfile-configuracion" .
 
       - name: Build Docker image 3
-        run: docker build -t almanzaalejandro/springboot-tres -f "Dockerfile-tres" .
+        run: docker build -t almanzaalejandro/springboot-tres -f "Dockerfile-eureka" .
 
       - name: Build Docker image 4
-        run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-cuatro" .
+        run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-gateway" .
+
+      - name: Build Docker image 5
+        run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-seguridad" .
+
+      - name: Build Docker image 6
+        run: docker build -t almanzaalejandro/springboot-cuatro -f "Dockerfile-cuentas" .
 
       # Push imágenes a Docker Hub
       - name: Push Image 1
-        run: docker push almanzaalejandro/springboot-uno:latest
+        run: docker push almanzaalejandro/springboot-correo:latest
 
       - name: Push Image 2
-        run: docker push almanzaalejandro/springboot-dos:latest
+        run: docker push almanzaalejandro/springboot-configuracion:latest
 
       - name: Push Image 3
-        run: docker push almanzaalejandro/springboot-tres:latest
+        run: docker push almanzaalejandro/springboot-eureka:latest
 
       - name: Push Image 4
-        run: docker push almanzaalejandro/springboot-cuatro:latest
+        run: docker push almanzaalejandro/springboot-gateway:latest
+      
+      - name: Push Image 5
+        run: docker push almanzaalejandro/springboot-seguridad:latest
+      
+      - name: Push Image 6
+        run: docker push almanzaalejandro/springboot-cuentas:latest
 
   deploy:
     needs: build
@@ -63,24 +77,30 @@ jobs:
     steps:
       - name: Pull images desde Docker Hub
         run: |
-          docker pull almanzaalejandro/springboot-uno:latest
-          docker pull almanzaalejandro/springboot-dos:latest
-          docker pull almanzaalejandro/springboot-tres:latest
-          docker pull almanzaalejandro/springboot-cuatro:latest
+          docker pull almanzaalejandro/springboot-correo:latest
+          docker pull almanzaalejandro/springboot-configuracion:latest
+          docker pull almanzaalejandro/springboot-eureka:latest
+          docker pull almanzaalejandro/springboot-gateway:latest
+          docker pull almanzaalejandro/springboot-seguridad:latest
+          docker pull almanzaalejandro/springboot-cuentas:latest
 
       - name: Eliminar contenedores anteriores
         run: |
-          docker rm -f springboot-uno || true
-          docker rm -f springboot-dos || true
-          docker rm -f springboot-tres || true
-          docker rm -f springboot-cuatro || true
+          docker rm -f springboot-correo || true
+          docker rm -f springboot-configuracion || true
+          docker rm -f springboot-eureka || true
+          docker rm -f springboot-gateway || true
+          docker rm -f springboot-seguridad || true
+          docker rm -f springboot-cuentas || true
 
       - name: Ejecutar contenedores nuevos
         run: |
-          docker run -d -p 8081:8080 --name springboot-uno almanzaalejandro/springboot-uno
-          docker run -d -p 8082:8080 --name springboot-dos almanzaalejandro/springboot-dos
-          docker run -d -p 8083:8080 --name springboot-tres almanzaalejandro/springboot-tres
-          docker run -d -p 8084:8080 --name springboot-cuatro almanzaalejandro/springboot-cuatro
+          docker run -d -p 8081:8080 --name springboot-uno almanzaalejandro/springboot-correo
+          docker run -d -p 8082:8080 --name springboot-dos almanzaalejandro/springboot-configuracion
+          docker run -d -p 8083:8080 --name springboot-tres almanzaalejandro/springboot-eureka
+          docker run -d -p 8084:8080 --name springboot-cuatro almanzaalejandro/springboot-gateway
+          docker run -d -p 8085:8080 --name springboot-cuatro almanzaalejandro/springboot-seguridad
+          docker run -d -p 8086:8080 --name springboot-cuatro almanzaalejandro/springboot-cuentas
 
       - name: Verificar contenedores activos
         run: docker ps

@@ -1,0 +1,11 @@
+[Unit]
+Description=Servidor para envio de Correos
+After=sl3-configuration-server.service sl3-server-eureka.service sl3-server-gateway.service
+
+[Service]
+User=ec2-user
+ExecStart=java -jar /home/ec2-user/Servidores/ServidorCorreo-1.0.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

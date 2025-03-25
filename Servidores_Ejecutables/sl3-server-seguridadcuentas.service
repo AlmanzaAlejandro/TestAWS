@@ -1,0 +1,11 @@
+[Unit]
+Description=Servidor para la Seguridad de las Cuentas
+After=sl3-configuration-server.service sl3-server-eureka.service sl3-server-gateway.service
+
+[Service]
+User=ec2-user
+ExecStart=java -jar /home/ec2-user/Servidores/ServidorSeguridadCuentas-1.0.0.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
