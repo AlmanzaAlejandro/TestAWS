@@ -58,8 +58,8 @@ jobs:
         run: docker push almanzaalejandro/springboot-cuatro:latest
 
   deploy:
-    needs: aws-ec2
-    runs-on: ubuntu-latest
+    needs: build
+    runs-on: [aws-ec2]
     steps:
       - name: Pull images desde Docker Hub
         run: |
