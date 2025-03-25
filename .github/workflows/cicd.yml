@@ -27,7 +27,7 @@ jobs:
           cp Servidores_Ejecutables/ServidorConfiguracion-2.0.jar jars/configuracion.jar
           cp Servidores_Ejecutables/ServidorEureka-2.0.jar jars/eureka.jar
           cp Servidores_Ejecutables/ServidorGateway-2.0.jar jars/gateway.jar
-          cp Servidores_Ejecutables/ServidorSeguridad-2.0.jar jars/seguridad.jar
+          cp Servidores_Ejecutables/ServidorSeguridad-2.0.0.jar jars/seguridad.jar
           cp Servidores_Ejecutables/ServidorSeguridadCuentas-1.0.0.jar jars/cuentas.jar
 
       - name: Login to Docker Hub
