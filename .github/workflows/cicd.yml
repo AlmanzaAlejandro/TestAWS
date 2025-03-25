@@ -95,12 +95,12 @@ jobs:
 
       - name: Ejecutar contenedores nuevos
         run: |
-          docker run -d -p 8081:8080 --name springboot-uno almanzaalejandro/correo
-          docker run -d -p 8082:8080 --name springboot-dos almanzaalejandro/configuracion
-          docker run -d -p 8083:8080 --name springboot-tres almanzaalejandro/eureka
-          docker run -d -p 8084:8080 --name springboot-cuatro almanzaalejandro/gateway
-          docker run -d -p 8085:8080 --name springboot-cuatro almanzaalejandro/seguridad
-          docker run -d -p 8086:8080 --name springboot-cuatro almanzaalejandro/cuentas
+          docker run -d -p 8081:8080 --name correo almanzaalejandro/correo
+          docker run -d -p 8082:8080 --name configuracion almanzaalejandro/configuracion
+          docker run -d -p 8083:8080 --name eureka almanzaalejandro/eureka
+          docker run -d -p 8084:8080 --name gateway almanzaalejandro/gateway
+          docker run -d -p 8085:8080 --name seguridad almanzaalejandro/seguridad
+          docker run -d -p 8086:8080 --name cuentas almanzaalejandro/cuentas
 
       - name: Verificar contenedores activos
         run: docker ps
