@@ -59,7 +59,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: aws-ec2
+    runs-on: ubuntu-latest
     steps:
       - name: Pull images desde Docker Hub
         run: |
