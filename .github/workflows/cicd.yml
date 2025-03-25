@@ -93,14 +93,10 @@ jobs:
           docker rm -f seguridad || true
           docker rm -f cuentas || true
 
-      - name: Ejecutar contenedores nuevos
+      - name: Run docker-compose
         run: |
-          docker run -d -p 8081:8080 --name correo almanzaalejandro/correo
-          docker run -d -p 8082:8080 --name configuracion almanzaalejandro/configuracion
-          docker run -d -p 8083:8080 --name eureka almanzaalejandro/eureka
-          docker run -d -p 8084:8080 --name gateway almanzaalejandro/gateway
-          docker run -d -p 8085:8080 --name seguridad almanzaalejandro/seguridad
-          docker run -d -p 8086:8080 --name cuentas almanzaalejandro/cuentas
-
+          docker compose pull
+          docker compose up -d
+          
       - name: Verificar contenedores activos
         run: docker ps
