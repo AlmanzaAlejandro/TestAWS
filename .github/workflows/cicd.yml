@@ -1,102 +1,49 @@
-name: CICD
+name: Deploy de servidores
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: [self-hosted, linux, x64, aws-ec2]
+
     steps:
-      - name: Checkout source
+      - name: Checkout del código
         uses: actions/checkout@v3
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Build Project
-        run: mvn clean install -DskipTests
-
-      - name: Copiar .jar desde Servidores_Ejecutables
+      - name: Actualizar ServidorCorreo
         run: |
-          mkdir jars
-          cp Servidores_Ejecutables/ServidorCorreo-1.0.jar jars/correo.jar
-          cp Servidores_Ejecutables/ServidorConfiguracion-2.0.jar jars/configuracion.jar
-          cp Servidores_Ejecutables/ServidorEureka-2.0.jar jars/eureka.jar
-          cp Servidores_Ejecutables/ServidorGateway-2.0.jar jars/gateway.jar
-          cp Servidores_Ejecutables/ServidorSeguridad-2.0.0.jar jars/seguridad.jar
-          cp Servidores_Ejecutables/ServidorSeguridadCuentas-1.0.0.jar jars/cuentas.jar
+          rm -f /home/ubuntu/servidores/servidor-correo/*.jar
+          cp Servidores_Ejecutables/ServidorCorreo-1.0.jar /home/ubuntu/servidores/servidor-correo/
+          sudo systemctl restart servidor-correo
 
-      - name: Login to Docker Hub
-        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-
-      # Build Docker images con distintos Dockerfiles
-      - name: Build Docker image 1
-        run: docker build -t almanzaalejandro/correo -f "Dockerfile-correo" .
-
-      - name: Build Docker image 2
-        run: docker build -t almanzaalejandro/configuracion -f "Dockerfile-configuracion" .
-
-      - name: Build Docker image 3
-        run: docker build -t almanzaalejandro/eureka -f "Dockerfile-eureka" .
-
-      - name: Build Docker image 4
-        run: docker build -t almanzaalejandro/gateway -f "Dockerfile-gateway" .
-
-      - name: Build Docker image 5
-        run: docker build -t almanzaalejandro/seguridad -f "Dockerfile-seguridad" .
-
-      - name: Build Docker image 6
-        run: docker build -t almanzaalejandro/cuentas -f "Dockerfile-cuentas" .
-
-      # Push imágenes a Docker Hub
-      - name: Push Image 1
-        run: docker push almanzaalejandro/correo
-
-      - name: Push Image 2
-        run: docker push almanzaalejandro/configuracion
-
-      - name: Push Image 3
-        run: docker push almanzaalejandro/eureka
-
-      - name: Push Image 4
-        run: docker push almanzaalejandro/gateway
-      
-      - name: Push Image 5
-        run: docker push almanzaalejandro/seguridad
-      
-      - name: Push Image 6
-        run: docker push almanzaalejandro/cuentas
-
-  deploy:
-    needs: build
-    runs-on: [aws-ec2]
-    steps:
-      - name: Pull images desde Docker Hub
+      - name: Actualizar ServidorConfiguracion
         run: |
-          docker pull almanzaalejandro/correo
-          docker pull almanzaalejandro/configuracion
-          docker pull almanzaalejandro/eureka
-          docker pull almanzaalejandro/gateway
-          docker pull almanzaalejandro/seguridad
-          docker pull almanzaalejandro/cuentas
+          rm -f /home/ubuntu/servidores/servidor-configuracion/*.jar
+          cp Servidores_Ejecutables/ServidorConfiguracion-2.0.jar /home/ubuntu/servidores/servidor-configuracion/
+          sudo systemctl restart servidor-configuracion
 
-      - name: Eliminar contenedores anteriores
+      - name: Actualizar ServidorEureka
         run: |
-          docker rm -f correo || true
-          docker rm -f configuracion || true
-          docker rm -f eureka || true
-          docker rm -f gateway || true
-          docker rm -f seguridad || true
-          docker rm -f cuentas || true
+          rm -f /home/ubuntu/servidores/servidor-eureka/*.jar
+          cp Servidores_Ejecutables/ServidorEureka-2.0.jar /home/ubuntu/servidores/servidor-eureka/
+          sudo systemctl restart servidor-eureka
 
-      - name: Run docker-compose
+      - name: Actualizar ServidorGateway
         run: |
-          docker compose pull
-          docker compose up -d
-          
-      - name: Verificar contenedores activos
-        run: docker ps
+          rm -f /home/ubuntu/servidores/servidor-gateway/*.jar
+          cp Servidores_Ejecutables/ServidorGateway-2.0.jar /home/ubuntu/servidores/servidor-gateway/
+          sudo systemctl restart servidor-gateway
+
+      - name: Actualizar ServidorSeguridad
+        run: |
+          rm -f /home/ubuntu/servidores/servidor-seguridad/*.jar
+          cp Servidores_Ejecutables/ServidorSeguridad-2.0.jar /home/ubuntu/servidores/servidor-seguridad/
+          sudo systemctl restart servidor-seguridad
+
+      - name: Actualizar ServidorSeguridadCuentas
+        run: |
+          rm -f /home/ubuntu/servidores/servidor-seguridadcuentas/*.jar
+          cp Servidores_Ejecutables/ServidorSeguridadCuentas-1.0.0.jar /home/ubuntu/servidores/servidor-seguridadcuentas/
+          sudo systemctl restart servidor-seguridadcuentas
