@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: [self-hosted]
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -33,4 +33,4 @@ jobs:
       - name: Delete old container
         run: docker rm -f springboot-example-container
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name springboot-example-container almanzaalejandro/springboot-example
+        run: docker run -d -p 8081:8081 --name springboot-example-container almanzaalejandro/springboot-example
